@@ -1,0 +1,9 @@
+"Gamemode"
+{
+	"base"		"base"
+	"title"		"Murder"
+	"maps"		"^md_|^mu_|^murder_"
+	"menusystem"	"1"
+	"workshopid" "187073946"
+	"version"	"29"
+}
