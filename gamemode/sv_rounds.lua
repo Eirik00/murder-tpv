@@ -365,19 +365,19 @@ function GM:StartNewRound()
 	
 	// allow admins to specify next murderer
 	if self.ForceNextMurderer && IsValid(self.ForceNextMurderer) && self.ForceNextMurderer:Team() == 2 then
-		
-		murderer = self.ForceNextMurderer
+		table.remove(arrayMurderers)
+		table.insert(arrayMurderers, self.ForceNextMurderer)
 		self.ForceNextMurderer = nil
 	end
-
-	if IsValid(murderer) then
-		for i=1, #arrayMurderers do
+	for i=1, #arrayMurderers do
+		if IsValid(arrayMurderers[i]) then
 			arrayMurderers[i]:SetMurderer(true)
 		end
 	end
+	
 	for k, ply in pairs(players) do
 		for i=1, #arrayMurderers do
-			if ply != murderer then
+			if ply != arrayMurderers[i] then
 				ply:SetMurderer(false)
 			end
 		end
