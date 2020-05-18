@@ -218,15 +218,17 @@ function GM:PlayerDeath(ply, Inflictor, attacker )
 	if !ply:GetMurderer() then
 
 		self.MurdererLastKill = CurTime()
-		local murderer
+		local murderers = {}
 		local players = team.GetPlayers(2)
 		for k,v in pairs(players) do
 			if v:GetMurderer() then
-				murderer = v
+				table.insert(murderers, v)
 			end
 		end
-		if murderer then
-			murderer:SetMurdererRevealed(false)
+		if murderers then
+			for i=1, #murderers do
+				murderers[i]:SetMurdererRevealed(false)
+			end
 		end
 
 		if IsValid(attacker) && attacker:IsPlayer() then
