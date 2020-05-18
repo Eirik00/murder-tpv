@@ -366,10 +366,10 @@ function GM:StartNewRound()
 	end
 	while true do
 		murderer = rand:Roll()
-		--if !table.HasValue(oldMurderers, murderer) then
-		table.insert(arrayMurderers, murderer)
-		break
-		--end
+		if !table.HasValue(oldMurderers, murderer) then
+			table.insert(arrayMurderers, murderer)
+			break
+		end
 	end
 	
 	if #players >= 2 then
