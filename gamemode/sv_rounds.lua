@@ -212,23 +212,45 @@ function GM:EndTheRound(reason, murderer, murderer2)
 			ct:SendAll()
 		end
 	elseif reason == 2 then
-		local col = murderer:GetPlayerColor()
-		local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
-			murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-		})
-		local ct = ChatText()
-		ct:Add(translate.winBystanders, Color(20, 120, 255))
-		ct:AddParts(msgs)
-		ct:SendAll()
+		if murderer && murderer2 then
+			local col = murderer:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
+				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			})
+			local ct = ChatText()
+			ct:Add(translate.winBystanders, Color(20, 120, 255))
+			ct:AddParts(msgs)
+			ct:SendAll()
+		elseif murderer then
+			local col = murderer:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
+				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			})
+			local ct = ChatText()
+			ct:Add(translate.winBystanders, Color(20, 120, 255))
+			ct:AddParts(msgs)
+			ct:SendAll()
+		end
 	elseif reason == 1 then
-		local col = murderer:GetPlayerColor()
-		local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
-			murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-		})
-		local ct = ChatText()
-		ct:Add(translate.winMurderer, Color(190, 20, 20))
-		ct:AddParts(msgs)
-		ct:SendAll()
+		if murderer && murderer2 then
+			local col = murderer:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
+				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			})
+			local ct = ChatText()
+			ct:Add(translate.winMurderer, Color(190, 20, 20))
+			ct:AddParts(msgs)
+			ct:SendAll()
+		elseif murderer then
+			local col = murderer:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
+				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			})
+			local ct = ChatText()
+			ct:Add(translate.winMurderer, Color(190, 20, 20))
+			ct:AddParts(msgs)
+			ct:SendAll()
+		end
 	end
 
 	net.Start("DeclareWinner")
