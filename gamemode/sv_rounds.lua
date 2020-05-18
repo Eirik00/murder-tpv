@@ -334,7 +334,10 @@ function GM:StartNewRound()
 	
 	
 	// pick a random murderer, weighted
+	local arrayMurderers = {}
+	local players = team.GetPlayers(2)
 	local rand = WeightedRandom()
+	
 	for k, ply in pairs(players) do
 		rand:Add(ply.MurdererChance ^ weightMul, ply)
 		ply.MurdererChance = ply.MurdererChance + 1
@@ -346,9 +349,6 @@ function GM:StartNewRound()
 			break
 		end
 	end
-	
-	local arrayMurderers = {}
-	local players = team.GetPlayers(2)
 	
 	if #players >= 6 then
 		while true do
@@ -365,6 +365,7 @@ function GM:StartNewRound()
 	
 	// allow admins to specify next murderer
 	if self.ForceNextMurderer && IsValid(self.ForceNextMurderer) && self.ForceNextMurderer:Team() == 2 then
+		
 		murderer = self.ForceNextMurderer
 		self.ForceNextMurderer = nil
 	end
