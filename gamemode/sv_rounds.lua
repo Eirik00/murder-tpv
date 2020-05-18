@@ -142,7 +142,7 @@ function GM:RoundCheckForWin()
 			return
 		end
 	// If there's two murderers
-	else
+	elseif #murderersArray == 2 then
 		local murderer = murderersArray[1]
 		local murderer2 = murderersArray[2]
 		
@@ -366,13 +366,13 @@ function GM:StartNewRound()
 	end
 	while true do
 		murderer = rand:Roll()
-		if !table.HasValue(oldMurderers, murderer) then
-			table.insert(arrayMurderers, murderer)
-			break
-		end
+		--if !table.HasValue(oldMurderers, murderer) then
+		table.insert(arrayMurderers, murderer)
+		break
+		--end
 	end
 	
-	if #players >= 6 then
+	if #players >= 2 then
 		while true do
 			murderer = rand:Roll()
 			if murderer != arrayMurderers[1] then
