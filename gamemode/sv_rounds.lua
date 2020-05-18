@@ -4,6 +4,8 @@ util.AddNetworkString("DeclareWinner")
 
 GM.RoundStage = 0
 GM.RoundCount = 0
+
+
 if GAMEMODE then
 	GM.RoundStage = GAMEMODE.RoundStage
 	GM.RoundCount = GAMEMODE.RoundCount
@@ -73,43 +75,24 @@ function GM:RoundThink()
 			end
 		end
 		// after x minutes without a kill reveal the murderer
-		local murderersArray = {}
-		local players = team.GetPlayers(2)
-		for k,v in pairs(players) do
-			if v:GetMurderer() then
-				table.insert(murderersArray, v)
-			end
-		end
-		
-		local murdernum = table.count(murderersArray)
 		local time = self.MurdererFogTime:GetFloat()
-		if murdernum = 2 then
-			time1 = math.max(0, time)
-			time2 = math.max(0, time)
-			
-			if time1 > 0 && self.MurdererLastKill && self.MurdererLastKill + time < CurTime() then
-				if murderersArray[1] && !murderer:GetMurdererRevealed() then
-					murderersArray[1]:SetMurdererRevealed(true)
-					self.MurdererLastKill = nil
+		time = math.max(0, time)
+
+		if time > 0 && self.MurdererLastKill && self.MurdererLastKill + time < CurTime() then
+			local murderersArray = {}
+			local players = team.GetPlayers(2)
+			for k,v in pairs(players) do
+				if v:GetMurderer() then
+					table.insert(murderersArray, v)
 				end
 			end
-			
-			if time2 > 0 && self.MurdererLastKill && self.MurdererLastKill + time < CurTime() then
-				if murderersArray[2] && !murderer:GetMurdererRevealed() then
-					murderersArray[2]:SetMurdererRevealed(true)
-					self.MurdererLastKill = nil
-				end
-			end
-		else
-			time = math.max(0, time)
-			if time > 0 && self.MurdererLastKill && self.MurdererLastKill + time < CurTime() then
-				if murderersArray[1] && !murderer:GetMurdererRevealed() then
-					murderersArray[1]:SetMurdererRevealed(true)
+			for i=1, #murderersArray do
+				if murderersArray[i] && !murderersArray[i]:GetMurdererRevealed() then
+					murderersArray[i]:SetMurdererRevealed(true)
 					self.MurdererLastKill = nil
 				end
 			end
 		end
-		
 
 	elseif self.RoundStage == self.Round.RoundEnd then
 		if self.RoundTime + 5 < CurTime() then
@@ -126,40 +109,56 @@ function GM:RoundThink()
 end
 
 function GM:RoundCheckForWin()
-	local murderer
 	local players = team.GetPlayers(2)
 	if #players <= 0 then 
 		self:SetRound(0)
 		return 
 	end
 	local survivors = {}
+	local murderersArray = {}
 	for k,v in pairs(players) do
 		if v:Alive() && !v:GetMurderer() then
 			table.insert(survivors, v)
 		end
 		if v:GetMurderer() then
-			murderer = v
+			table.insert(murderersArray, v)
 		end
 	end
-
-	// check we have a murderer
-	if !IsValid(murderer) then
-		self:EndTheRound(3, murderer)
-		return
+	
+	// If there's only one murderer
+	if #murderersArray == 1 then
+		local murderer = murderersArray[1]
+		
+		if !IsValid(murderer) == 1 then
+			self:EndTheRound(3, murderer)
+			return
+		end
+		if !murderer:Alive() then
+			self:EndTheRound(2, murderer)
+			return
+		end
+		if #survivors < 1 then
+			self:EndTheRound(1, murderer)
+			return
+		end
+	// If there's two murderers
+	else
+		local murderer = murderersArray[1]
+		local murderer2 = murderersArray[2]
+		
+		if !IsValid(murderer) && !IsValid(murderer2) then
+			self:EndTheRound(3, murderer, murderer2)
+			return
+		end
+		if !murderersArray[1] && !murderersArray[2] then
+			self:EndTheRound(2, murderer, murderer2)
+			return
+		end
+		if #survivors < 1 then
+			self:EndTheRound(1, murderer, murderer2)
+			return
+		end
 	end
-
-	// has the murderer killed everyone?
-	if #survivors < 1 then
-		self:EndTheRound(1, murderer)
-		return
-	end
-
-	// is the murderer dead?
-	if !murderer:Alive() then
-		self:EndTheRound(2, murderer)
-		return
-	end
-
 	// keep playing.
 end
 
@@ -170,10 +169,10 @@ function GM:DoRoundDeaths(dead, attacker)
 	end
 end
 
-// 1 Murderer wins
-// 2 Murderer loses
-// 3 Murderer rage quit
-function GM:EndTheRound(reason, murderer)
+// 1 Murderers wins
+// 2 Murderers loses
+// 3 Murderers rage quit
+function GM:EndTheRound(reason, murderer, murderer2)
 	if self.RoundStage != self.Round.Playing then return end
 
 	local players = team.GetPlayers(2)
@@ -193,6 +192,13 @@ function GM:EndTheRound(reason, murderer)
 			ct:SendAll()
 			-- ct:Add(", it was ")
 			-- ct:Add(murderer:Nick() .. ", " .. murderer:GetBystanderName(), Color(col.x * 255, col.y * 255, col.z * 255))
+		elseif murderer && murderer2 then
+			local col = murderer:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.murdererDisconnectKnown, {
+				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			})
+			local ct = ChatText(msgs)
+			ct:SendAll()
 		else
 			local ct = ChatText()
 			ct:Add(translate.murdererDisconnect)
