@@ -13,7 +13,7 @@ pt.teamPlayers = "Players"
 pt.teamAss = "Cake"
 
 pt.killedTeamKill = "{player} killed an innocent bystander"
-pt.killedMurderer = "{player} killed the murderer"
+pt.killedMurderer = "{player} killed a murderer"
 
 pt.murdererDeathUnknown = "The murderer died in mysterious circumstances"
 
@@ -23,13 +23,16 @@ pt.teamMovedAFK = "{player} was moved to {team} for being AFK"
 
 pt.spectateFailed = "You can't spectate. You ain't dead."
 
-pt.murdererDisconnect = "The murderer rage quit"
-pt.murdererDisconnectKnown = "The murderer rage quit, it was {murderer}"
+pt.murdererDisconnect = "A murderer rage quit"
+pt.murdererDisconnectKnown = "The murderers rage quit, they were {murderer1} and {murderer2}"
 
 pt.winBystanders = "Bystanders win!"
-pt.winBystandersMurdererWas = " The murderer was {murderer}"
+pt.winBystandersMurdererWas = " The murderer was {murderer1}"
+pt.winBystandersMurderersWas = " The murderers were {murderer1} and {murderer2}"
 pt.winMurderer = "The murderer wins!"
-pt.winMurdererMurdererWas = " He was {murderer}"
+pt.winMurdererMurdererWas = " The murderer was {murderer1}"
+pt.winMurderers = "The murderers win!"
+pt.winMurderersMurdererWas = " They were {murderer1} and {murderer2}"
 
 pt.minimumPlayers = "Not enough players to start round"
 pt.waitingToStart = "Waiting to start round"
@@ -62,7 +65,9 @@ pt.scoreboardActionViewProfile = "View Profile"
 pt.endroundMurdererQuit = "Bystanders win! The murderer rage quit"
 pt.endroundBystandersWin = "Bystanders win!"
 pt.endroundMurdererWins = "The murderer wins!"
-pt.endroundMurdererWas = "The murderer was {murderer}"
+pt.endroundMurdererWas = "The murderer was {murderer1}"
+pt.endroundMurderersWins = "The murderers win!"
+pt.endroundMurderersWas = "The murderers were {murderer1} and {murderer2}"
 
 pt.endroundLootCollected = "Loot Collected"
 
@@ -88,7 +93,10 @@ pt.startHelpBystander = {
 	"There is a murderer on the loose",
 	"Don't get killed"
 }
-
+--[[pt.startHelpBystander2 = {
+	"There are two murderers on the loose",
+	"Don't get killed"
+}]]
 
 pt.startHelpGunTitle = "You are a bystander"
 pt.startHelpGunSubtitle = "with a secret weapon"
@@ -96,6 +104,10 @@ pt.startHelpGun = {
 	"There is a murderer on the loose",
 	"Find and kill him"
 }
+--[[pt.startHelpGun2 = {
+	"There are two murderers on the loose",
+	"Find and kill them"
+}]]
 
 pt.startHelpMurdererTitle = "You are the murderer"
 pt.startHelpMurderer = {

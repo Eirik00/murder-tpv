@@ -4,8 +4,6 @@ util.AddNetworkString("DeclareWinner")
 
 GM.RoundStage = 0
 GM.RoundCount = 0
-
-
 if GAMEMODE then
 	GM.RoundStage = GAMEMODE.RoundStage
 	GM.RoundCount = GAMEMODE.RoundCount
@@ -79,16 +77,16 @@ function GM:RoundThink()
 		time = math.max(0, time)
 
 		if time > 0 && self.MurdererLastKill && self.MurdererLastKill + time < CurTime() then
-			local murderersArray = {}
+			local murderer = {}
 			local players = team.GetPlayers(2)
 			for k,v in pairs(players) do
 				if v:GetMurderer() then
-					table.insert(murderersArray, v)
+					table.insert(murderer,v)
 				end
 			end
-			for i=1, #murderersArray do
-				if murderersArray[i] && !murderersArray[i]:GetMurdererRevealed() then
-					murderersArray[i]:SetMurdererRevealed(true)
+			for k,v in pairs(murderer) do
+				if v && !v:GetMurdererRevealed() then
+					v:SetMurdererRevealed(true)
 					self.MurdererLastKill = nil
 				end
 			end
@@ -109,56 +107,57 @@ function GM:RoundThink()
 end
 
 function GM:RoundCheckForWin()
+	local murderer = {}
 	local players = team.GetPlayers(2)
 	if #players <= 0 then 
 		self:SetRound(0)
 		return 
 	end
 	local survivors = {}
-	local murderersArray = {}
 	for k,v in pairs(players) do
 		if v:Alive() && !v:GetMurderer() then
 			table.insert(survivors, v)
 		end
 		if v:GetMurderer() then
-			table.insert(murderersArray, v)
+			table.insert(murderer, v)
 		end
 	end
+
+	// check we have a murderer
+
 	
-	// If there's only one murderer
-	if #murderersArray == 1 then
-		local murderer = murderersArray[1]
-		
-		if !IsValid(murderer) == 1 then
-			self:EndTheRound(3, murderer)
-			return
-		end
-		if !murderer:Alive() then
-			self:EndTheRound(2, murderer)
-			return
-		end
-		if #survivors < 1 then
-			self:EndTheRound(1, murderer)
-			return
-		end
-	// If there's two murderers
-	elseif #murderersArray == 2 then
-		local murderer = murderersArray[1]
-		local murderer2 = murderersArray[2]
-		
-		if !IsValid(murderer) && !IsValid(murderer2) then
-			self:EndTheRound(3, murderer, murderer2)
-			return
-		end
-		if !murderersArray[1] && !murderersArray[2] then
-			self:EndTheRound(2, murderer, murderer2)
-			return
-		end
-		if #survivors < 1 then
-			self:EndTheRound(1, murderer, murderer2)
-			return
+	local validMurderer = false
+	for k, v in pairs(murderer) do
+		if IsValid(v) then	
+			validMurderer = true
+			break
 		end
 	end
+		
+	if !validMurderer then
+		self:EndTheRound(3, murderer)
+		return
+	end
+
+	// has the murderer killed everyone?
+	if #survivors < 1 then
+		self:EndTheRound(1, murderer)
+		return
+	end
+
+	// is the murderer dead?
+	local aliveMurderer = false
+	for k, v in pairs(murderer) do
+		if v:Alive() then
+			aliveMurderer = true
+			break
+		end
+	end	
+	if !aliveMurderer then
+		self:EndTheRound(2, murderer)
+		return
+	end
+
 	// keep playing.
 end
 
@@ -169,12 +168,12 @@ function GM:DoRoundDeaths(dead, attacker)
 	end
 end
 
-// 1 Murderers wins
-// 2 Murderers loses
-// 3 Murderers rage quit
-function GM:EndTheRound(reason, murderer, murderer2)
+// 1 Murderer wins
+// 2 Murderer loses
+// 3 Murderer rage quit
+function GM:EndTheRound(reason, murderers)
 	if self.RoundStage != self.Round.Playing then return end
-
+	
 	local players = team.GetPlayers(2)
 	for k, ply in pairs(players) do
 		ply:SetTKer(false)
@@ -184,26 +183,17 @@ function GM:EndTheRound(reason, murderer, murderer2)
 
 	if reason == 3 then
 		if murderer then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.murdererDisconnectKnown, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+			local col1 = murderers[1]:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
+				murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)}
 			})
-			local ct = ChatText(msgs)
-			ct:SendAll()
-			-- ct:Add(", it was ")
-			-- ct:Add(murderer:Nick() .. ", " .. murderer:GetBystanderName(), Color(col.x * 255, col.y * 255, col.z * 255))
-		elseif murderer2 then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.murdererDisconnectKnown, {
-				murderer = {text = murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-			})
-			local ct = ChatText(msgs)
-			ct:SendAll()
-		elseif murderer && murderer2 then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.murdererDisconnectKnown, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-			})
+			if #murderers == 2 then
+				local col2 = murderers[2]:GetPlayerColor()
+				local msgs = Translator:AdvVarTranslate(translate.winBystandersMurderersWas, {
+					murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)},
+					murderer2 = {text =  murderers[2]:Nick() .. ", " .. murderers[2]:GetBystanderName(), color = Color(col2.x * 255, col2.y * 255, col2.z * 255)}
+				})
+			end
 			local ct = ChatText(msgs)
 			ct:SendAll()
 		else
@@ -212,40 +202,42 @@ function GM:EndTheRound(reason, murderer, murderer2)
 			ct:SendAll()
 		end
 	elseif reason == 2 then
-		if murderer && murderer2 then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+		local col1 = murderers[1]:GetPlayerColor()
+		local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
+			murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)}
+		})
+		if #murderers == 2 then
+			local col2 = murderers[2]:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurderersWas, {
+				murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)},
+				murderer2 = {text =  murderers[2]:Nick() .. ", " .. murderers[2]:GetBystanderName(), color = Color(col2.x * 255, col2.y * 255, col2.z * 255)}
 			})
 			local ct = ChatText()
 			ct:Add(translate.winBystanders, Color(20, 120, 255))
 			ct:AddParts(msgs)
 			ct:SendAll()
-		elseif murderer then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-			})
+		else
 			local ct = ChatText()
 			ct:Add(translate.winBystanders, Color(20, 120, 255))
 			ct:AddParts(msgs)
 			ct:SendAll()
 		end
 	elseif reason == 1 then
-		if murderer && murderer2 then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName() .. " and " .. murderer2:Nick() .. ", " .. murderer2:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
+		local col1 = murderers[1]:GetPlayerColor()
+		local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
+			murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)}
+		})
+		if #murderers == 2 then
+			local col2 = murderers[2]:GetPlayerColor()
+			local msgs = Translator:AdvVarTranslate(translate.winMurderersMurdererWas, {
+				murderer1 = {text =  murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), color = Color(col1.x * 255, col1.y * 255, col1.z * 255)},
+				murderer2 = {text =  murderers[2]:Nick() .. ", " .. murderers[2]:GetBystanderName(), color = Color(col2.x * 255, col2.y * 255, col2.z * 255)}
 			})
 			local ct = ChatText()
-			ct:Add(translate.winMurderer, Color(190, 20, 20))
+			ct:Add(translate.winMurderers, Color(190, 20, 20))
 			ct:AddParts(msgs)
 			ct:SendAll()
-		elseif murderer then
-			local col = murderer:GetPlayerColor()
-			local msgs = Translator:AdvVarTranslate(translate.winMurdererMurdererWas, {
-				murderer = {text = murderer:Nick() .. ", " .. murderer:GetBystanderName(), color = Color(col.x * 255, col.y * 255, col.z * 255)}
-			})
+		else
 			local ct = ChatText()
 			ct:Add(translate.winMurderer, Color(190, 20, 20))
 			ct:AddParts(msgs)
@@ -255,17 +247,41 @@ function GM:EndTheRound(reason, murderer, murderer2)
 
 	net.Start("DeclareWinner")
 	net.WriteUInt(reason, 8)
-	--?
-	if murderer then
-		net.WriteEntity(murderer)
-		net.WriteVector(murderer:GetPlayerColor())
-		net.WriteString(murderer:GetBystanderName())
+	if #murderers == 2 then 
+		if murderers[1] && murderers[2] then
+			net.WriteEntity(murderers[1])
+			net.WriteVector(murderers[1]:GetPlayerColor())
+			net.WriteString(murderers[1]:GetBystanderName())
+			net.WriteBool(true)
+			net.WriteEntity(murderers[2])
+			net.WriteVector(murderers[2]:GetPlayerColor())
+			net.WriteString(murderers[2]:GetBystanderName())
+		elseif murderers[1] || murderers[2] then
+			for k, murderer in pairs(murderers) do
+				net.WriteEntity(murderers[1])
+				net.WriteVector(murderers[1]:GetPlayerColor())
+				net.WriteString(murderers[1]:GetBystanderName())
+				net.WriteBool(false)
+			end
+		else
+			net.WriteEntity(Entity(0))
+			net.WriteVector(Vector(1, 1, 1))
+			net.WriteString("?")
+			net.WriteBool(false)
+		end
 	else
-		net.WriteEntity(Entity(0))
-		net.WriteVector(Vector(1, 1, 1))
-		net.WriteString("?")
+		if murderers[1] then
+			net.WriteEntity(murderers[1])
+			net.WriteVector(murderers[1]:GetPlayerColor())
+			net.WriteString(murderers[1]:GetBystanderName())
+			net.WriteBool(false)
+		else
+			net.WriteEntity(Entity(0))
+			net.WriteVector(Vector(1, 1, 1))
+			net.WriteString("?")
+			net.WriteBool(false)
+		end
 	end
-
 	for k, ply in pairs(team.GetPlayers(2)) do
 		net.WriteUInt(1, 8)
 		net.WriteEntity(ply)
@@ -300,7 +316,8 @@ function GM:EndTheRound(reason, murderer, murderer2)
 	self.RoundUnFreezePlayers = nil
 
 	self.MurdererLastKill = nil
-
+	
+	
 	hook.Call("OnEndRound")
 	hook.Run("OnEndRoundResult", reason)
 	self.RoundCount = self.RoundCount + 1
@@ -341,67 +358,53 @@ function GM:StartNewRound()
 
 
 
-	local oldMurderers = {}
+	local oldMurderer
 	for k,v in pairs(players) do
 		if v:GetMurderer() then
-			table.insert(oldMurderers, v)
+			oldMurderer = v
 		end
 	end
 	
-	local murderer
+	local murderer = {}
 
 	// get the weight multiplier
 	local weightMul = self.MurdererWeight:GetFloat()
 
-	
-	
 	// pick a random murderer, weighted
-	local arrayMurderers = {}
-	local players = team.GetPlayers(2)
 	local rand = WeightedRandom()
-	
 	for k, ply in pairs(players) do
 		rand:Add(ply.MurdererChance ^ weightMul, ply)
 		ply.MurdererChance = ply.MurdererChance + 1
 	end
-	while true do
-		murderer = rand:Roll()
-		if !table.HasValue(oldMurderers, murderer) then
-			table.insert(arrayMurderers, murderer)
-			break
-		end
-	end
-	
-	if #players >= 2 then
-		while true do
-			murderer = rand:Roll()
-			if murderer != arrayMurderers[1] then
-				if !table.HasValue(oldMurderers, murderer) then
-					table.insert(arrayMurderers, murderer)
-					break
-				end
-			end
-		end
-	end
-	
+	table.insert(murderer,rand:Roll())
 	
 	// allow admins to specify next murderer
 	if self.ForceNextMurderer && IsValid(self.ForceNextMurderer) && self.ForceNextMurderer:Team() == 2 then
-		table.remove(arrayMurderers)
-		table.insert(arrayMurderers, self.ForceNextMurderer)
+		murderer[1] = self.ForceNextMurderer
 		self.ForceNextMurderer = nil
 	end
-	for i=1, #arrayMurderers do
-		if IsValid(arrayMurderers[i]) then
-			arrayMurderers[i]:SetMurderer(true)
+	
+	
+	local potentialMurderer
+	if #players >= 8 then
+		while true do
+			potentialMurderer = rand:Roll()
+			if murderer[1] != potentialMurderer then
+				table.insert(murderer,potentialMurderer)
+				break
+			end
 		end
 	end
 	
+	PrintTable(murderer)
+	for k, v in pairs(murderer) do
+		if IsValid(v) then
+			v:SetMurderer(true)
+		end
+	end
 	for k, ply in pairs(players) do
-		for i=1, #arrayMurderers do
-			if ply != arrayMurderers[i] then
-				ply:SetMurderer(false)
-			end
+		if ply != murderer[1] and ply != murderer[2] then
+			ply:SetMurderer(false)
 		end
 		ply:StripWeapons()
 		ply:KillSilent()
@@ -421,12 +424,24 @@ function GM:StartNewRound()
 		ply:GenerateBystanderName()
 	end
 	local noobs = table.Copy(players)
-	table.RemoveByValue(noobs, murderer)
+	table.RemoveByValue(noobs, murderer[1])
+	if IsValid(murderer[2]) then
+		table.RemoveByValue(noobs, murderer[2])
+	end
 	local magnum = table.Random(noobs)
+	--local magnumHolder = {}
 	if IsValid(magnum) then
 		magnum:Give("weapon_mu_magnum")
+		--table.insert(magnumHolder, magnum)
+		if IsValid(murderer[2]) then
+			local magnum = table.Random(noobs)
+			if IsValid(magnum) then 
+				magnum:Give("weapon_mu_magnum")
+				--table.insert(magnumHolder, magnum)
+			end
+		end
 	end
-
+	
 	self.MurdererLastKill = CurTime()
 
 	self:SetRound(self.Round.Playing)
@@ -440,7 +455,7 @@ function GM:PlayerLeavePlay(ply)
 
 	if self.RoundStage == 1 then
 		if ply:GetMurderer() then
-			self:EndTheRound(3, ply)
+			self:RoundCheckForWin()
 		end
 	end
 end

@@ -4,7 +4,7 @@ function GM:DisplayEndRoundBoard(data)
 	if IsValid(menu) then
 		menu:Remove()
 	end
-
+	
 	menu = vgui.Create("DFrame")
 	menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
 	menu:Center()
@@ -51,12 +51,18 @@ function GM:DisplayEndRoundBoard(data)
 	function murdererPnl:Paint()
 	end
 
-	if data.murdererName then
-		local col = data.murdererColor
+	if data.murderer1Name then
+		local col1 = data.murderer1Color
 		local msgs = Translator:AdvVarTranslate(translate.endroundMurdererWas, {
-			murderer = {text = data.murdererName, color = Color(col.x * 255, col.y * 255, col.z * 255)}
+				murderer1 = {text = data.murderer1Name, color = Color(col1.x * 255, col1.y * 255, col1.z * 255)}
 		})
-
+		if data.murderer2Name && IsValid(data.murderer2) then
+			local col2 = data.murderer2Color
+			msgs = Translator:AdvVarTranslate(translate.endroundMurderersWas, {
+				murderer1 = {text = data.murderer1Name, color = Color(col1.x * 255, col1.y * 255, col1.z * 255)},
+				murderer2 = {text = data.murderer2Name, color = Color(col2.x * 255, col2.y * 255, col2.z * 255)}
+			})
+		end
 		for k, msg in pairs(msgs) do
 			local was = vgui.Create("DLabel", murdererPnl)
 			was:Dock(LEFT)

@@ -1,9 +1,10 @@
 local PlayerMeta = FindMetaTable("Player")
 
 util.AddNetworkString("your_are_a_murderer")
+util.AddNetworkString("other_murder")
+
 
 GM.MurdererWeight = CreateConVar("mu_murder_weight_multiplier", 2, bit.bor(FCVAR_NOTIFY), "Multiplier for the weight of the murderer chance" )
-
 function PlayerMeta:SetMurderer(bool)
 	self.Murderer = bool
 	if bool then
@@ -12,6 +13,21 @@ function PlayerMeta:SetMurderer(bool)
 	net.Start( "your_are_a_murderer" )
 	net.WriteUInt(bool and 1 or 0, 8)
 	net.Send( self )
+	
+	--[[net.Start( "other_murder" )
+	for k, v in pairs(player.GetAll()) do
+		if v:GetMurderer() && v != LocalPlayer() then
+			other = v:Nick() .. ", " .. v:GetBystanderName()
+			break
+		end
+	end
+	if other then
+		net.WriteString(other)
+		net.WriteBool(true)
+	else
+		net.WriteBool(false)
+	end
+	net.send( self )]]
 end
 
 function PlayerMeta:GetMurderer(bool)
@@ -37,27 +53,28 @@ end
 local NO_KNIFE_TIME = 30
 function GM:MurdererThink()
 	local players = team.GetPlayers(2)
-	local murderer
+	local murderer = {}
 	for k,ply in pairs(players) do
 		if ply:GetMurderer() then
-			murderer = ply
-			break
+			table.insert(murderer,ply)
 		end
 	end
 
 	// regenerate knife if on ground
-	if IsValid(murderer) && murderer:Alive() then
-		if murderer:HasWeapon("weapon_mu_knife") then
-			murderer.LastHadKnife = CurTime()
-		else
-			if murderer.LastHadKnife && murderer.LastHadKnife + NO_KNIFE_TIME < CurTime() then
-				for k, ent in pairs(ents.FindByClass("weapon_mu_knife")) do
-					ent:Remove()
+	for k, v in pairs(murderer) do
+		if IsValid(v) && v:Alive() then
+			if v:HasWeapon("weapon_mu_knife") then
+				v.LastHadKnife = CurTime()
+			else
+				if v.LastHadKnife && v.LastHadKnife + NO_KNIFE_TIME < CurTime() then
+					for k, ent in pairs(ents.FindByClass("weapon_mu_knife")) do
+						ent:Remove()
+					end
+					for k, ent in pairs(ents.FindByClass("mu_knife")) do
+						ent:Remove()
+					end
+					v:Give("weapon_mu_knife")
 				end
-				for k, ent in pairs(ents.FindByClass("mu_knife")) do
-					ent:Remove()
-				end
-				murderer:Give("weapon_mu_knife")
 			end
 		end
 	end

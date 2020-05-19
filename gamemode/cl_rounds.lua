@@ -44,12 +44,16 @@ end)
 net.Receive("DeclareWinner" , function (length)
 	local data = {}
 	data.reason = net.ReadUInt(8)
-	data.murderer = net.ReadEntity()
-	data.murdererColor = net.ReadVector()
-	data.murdererName = net.ReadString()
-	if IsValid(data.murderer) then
+	data.murderer1 = net.ReadEntity(1)
+	data.murderer1Color = net.ReadVector()
+	data.murderer1Name = net.ReadString()
+	murderer2 = net.ReadBool()
+	if murderer2 then
+		data.murderer2 = net.ReadEntity()
+		data.murderer2Color = net.ReadVector()
+		data.murderer2Name = net.ReadString()
 	end
-
+	
 	data.collectedLoot = {}
 	while true do
 		local cont = net.ReadUInt(8)

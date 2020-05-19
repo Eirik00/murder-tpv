@@ -92,10 +92,11 @@ function GM:InitPostEntityAndMapCleanup()
 end
 
 function GM:Think()
-	self:RoundThink()
+	self:GetRound()
 	self:MurdererThink()
 	self:LootThink()
 	self:FlashlightThink()
+	self:RoundThink()
 
 	for k, ply in pairs(player.GetAll()) do
 		if ply:IsCSpectating() && IsValid(ply:GetCSpectatee()) && (!ply.LastSpectatePosSet || ply.LastSpectatePosSet < CurTime()) then
@@ -111,6 +112,30 @@ function GM:Think()
 		if ply.LastTKTime && ply.LastTKTime + self:GetTKPenaltyTime() < CurTime() then
 			ply:SetTKer(false)
 		end
+	end
+end
+
+function GM:PlayerDisconnected( ply )
+     if ply:GetMurderer() then
+		local ct = ChatText()
+		ct:Add(translate.murdererDisconnect)
+		ct:SendAll()
+	end
+end
+
+function GM:PlayerShouldTakeDamage( victim, pl )
+	local murderers = {}
+	for k, v in pairs( player.GetAll() ) do
+		if v:GetMurderer() then
+			table.insert(murderers, v)
+		end
+	end
+	
+	if #murderers == 2 && pl:GetMurderer() then
+		if !victim:GetMurderer() then return true end
+		return false
+	else
+		return true
 	end
 end
 

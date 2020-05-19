@@ -124,10 +124,21 @@ function GM:DrawStartRoundInformation()
 	local c = Color(20,120,255)
 	local desc = translate.table.startHelpBystander
 
+	--[[if self:GetTwoMurders() then
+		desc = translate.table.startHelpBystander2
+	end]]
+	
 	if self:GetAmMurderer() then
+		--[[if self:GetTwoMurders() then
+			v = self:GetOtherMurderer()
+			t1 = translate.startHelpMurdererTitle .. " with " .. v
+			desc = translate.table.startHelpMurderer
+			c = Color(190, 20, 20)
+		else]]
 		t1 = translate.startHelpMurdererTitle
 		desc = translate.table.startHelpMurderer
 		c = Color(190, 20, 20)
+		--end
 	end
 
 	local hasMagnum = false
@@ -141,6 +152,9 @@ function GM:DrawStartRoundInformation()
 		t1 = translate.startHelpGunTitle
 		t2 = translate.startHelpGunSubtitle
 		desc = translate.table.startHelpGun
+		--[[if self:GetTwoMurders() then
+			desc = translate.table.startHelpGun2
+		end]]
 	end
 
 	drawTextShadow(t1, "MersRadial", ScrW() / 2, ScrH()  * 0.25, c, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
