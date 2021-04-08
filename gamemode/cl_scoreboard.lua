@@ -60,18 +60,18 @@ local function addPlayerItem(self, mlist, ply, pteam)
 				surface.SetDrawColor(color_white)
 				surface.DrawTexturedRect(s + 40, h / 2 - 16, 32, 32)
 				e = e + 32
-				draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-			    draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 46, 8, Color( 169, 169, 169, 255 ), 0)
+				draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 46, 8, Color( 169, 169, 169, 255 ), 0)
 			else
-			    draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-			    draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 46, 8, color_white, 0)
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 46, 8, color_white, 0)
             end
             
-            draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 800, 9, color_black, 2)
-            draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 799, 8, color_white, 2)
-            
-            draw.DrawText("|", "ScoreboardPlayer", w - 110, 9, color_black, 2)
-            draw.DrawText("|", "ScoreboardPlayer", w - 109, 8, color_white, 2)
+            -- U Time
+            --draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 800, 9, color_black, 2)
+            --draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 799, 8, color_white, 2)
+            --draw.DrawText("|", "ScoreboardPlayer", w - 110, 9, color_black, 2)
+            --draw.DrawText("|", "ScoreboardPlayer", w - 109, 8, color_white, 2)
             
             draw.DrawText("ping:", "ScoreboardPlayer", w - 49, 9, color_black, 2)
             draw.DrawText("ping:", "ScoreboardPlayer", w - 48, 8, color_white, 2)
@@ -336,14 +336,11 @@ function GM:ScoreboardShow()
 		menu.Cops:Dock(LEFT)
 		menu.Robbers = makeTeamList(menu, 1)
 		menu.Robbers:Dock(FILL)
-		
-		--local user = "Guest "
-		--local member = "Member "
-		local mods = "Moderators "
-		local admins = "Admins "
-		local owners =  "Owners "
-		local one = "Staff Colors: "
-		local breaker = "● "
+		local mods = "MechanicalMind "
+		local admins = "Coco "
+        local owners =  "Wind "
+		local one = "Created by: "
+		local breaker = "& "
 		local fuck = " "
 		--local numbing = "Players(" .. tostring(lrjfei) .. ")"
 		
@@ -377,43 +374,12 @@ function GM:ScoreboardShow()
 		mode:SetFont("MersText1")
 		mode.PerformLayout = name.PerformLayout
 		mode:SetTextColor(Color(0, 153, 0))
-		
-		--member
-		--local memb = Label(member, menu.Credits)
-		--memb:Dock(RIGHT)
-		--memb:SetFont("MersText1")
-		--memb.PerformLayout = name.PerformLayout
-		--memb:SetTextColor(team.GetColor(2))
-		
-		--local breake = Label(breaker, menu.Credits)
-		--breake:Dock(RIGHT)
-		--breake:SetFont("MersText1")
-		--breake.PerformLayout = name.PerformLayout
-		--breake:SetTextColor(team.GetColor(1))
-		
-		----guest
-		--local gue = Label(user, menu.Credits)
-		--gue:Dock(RIGHT)
-		--gue:SetFont("MersText1")
-		--gue.PerformLayout = name.PerformLayout
-		--gue:SetTextColor(Color(180, 180, 180))
-		
 		--Misc.
 		local online = Label(one, menu.Credits)
 		online:Dock(RIGHT)
 		online:SetFont("MersText1")
 		online.PerformLayout = name.PerformLayout
 		online:SetTextColor(Color(39, 192, 227))
-		
-		--[[local shit = Label("    ", menu.Credits)
-		shit:Dock(RIGHT)
-		shit.PerformLayout = name.PerformLayout
-		
-		local manyply = Label(numbing, menu.Credits)
-		manyply:Dock(RIGHT)
-		manyply:SetFont("MersText1")
-		manyply.PerformLayout = name.PerformLayout
-		manyply:SetTextColor(team.GetColor(2))]]--
 		
 		local shit = Label(fuck, menu.Credits)
 		shit:Dock(RIGHT)
