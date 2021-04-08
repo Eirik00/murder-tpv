@@ -1,9 +1,4 @@
-# The Pit Murder
-### Modified Version of Murder
-The Pit Murder is a modified version of murder suited for our servers.
-
-### Changes:
-##### - Double Murderers
-##### - Improved Scoreboard
-##### - Join Menu
+# The Pit Murder EXPERIMENTAL
+### EXPERIMENTAL VERSION of the gamemode
+This is the epxerimental version of this gamemode, it's not tested and therefore could be way more unstable than the master branch!
 
