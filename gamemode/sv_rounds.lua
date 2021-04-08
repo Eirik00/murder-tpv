@@ -177,6 +177,7 @@ end
 // 1 Murderer wins
 // 2 Murderer loses
 // 3 Murderer rage quit
+// 4 Special round
 function GM:EndTheRound(reason, murderers)
 	if self.RoundStage != self.Round.Playing then return end
 	
@@ -186,8 +187,17 @@ function GM:EndTheRound(reason, murderers)
 		ply:SetMurdererRevealed(false)
 		ply:UnMurdererDisguise()
 	end
-
-	if reason == 3 then
+	
+    if reason == 4 then
+        local murdsrs = murderers
+        murderers = {}
+        table.insert(murderers, murdsrs)
+       	local col1 = murderers[1]:GetPlayerColor()
+        local ct = ChatText()
+		ct:Add("The winner of this round is ")
+		ct:Add(murderers[1]:Nick() .. ", " .. murderers[1]:GetBystanderName(), Color(col1.x * 255, col1.y * 255, col1.z * 255))
+		ct:SendAll()
+	elseif reason == 3 then
 		if murderer then
 			local col1 = murderers[1]:GetPlayerColor()
 			local msgs = Translator:AdvVarTranslate(translate.winBystandersMurdererWas, {

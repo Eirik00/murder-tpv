@@ -1,4 +1,3 @@
-
 surface.CreateFont( "MersText1" , {
 	font = "Tahoma",
 	size = 16,
@@ -157,7 +156,7 @@ function GM:DrawStartRoundInformation()
 		--end
 	end
 
-	local hasMagnum = false
+	hasMagnum = false
 	for k, wep in pairs(client:GetWeapons()) do
 		if wep:GetClass() == "weapon_mu_magnum" then
 			hasMagnum = true
@@ -318,6 +317,12 @@ function GM:DrawGameHUD(ply)
 			if self.PlayTimeLeft then
 				local minu = math.floor(self.PlayTimeLeft / 60)
 				local sec = (self.PlayTimeLeft % 60)
+				if minu < 10 then
+				    minu = "0" .. tostring(minu)
+				end
+				if sec < 10 then
+				    sec = "0" .. tostring(sec) 
+				end
 			
 				drawTextShadow(minu .. " : " .. sec , "MersRadialSmall", size * 0.6, ScrH() - size * 0.08, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
 			else

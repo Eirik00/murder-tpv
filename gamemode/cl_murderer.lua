@@ -1,4 +1,3 @@
-
 function GM:SetAmMurderer(bool)
 	self.Murderer = bool
 	self:ResetMurdererList()
@@ -77,13 +76,15 @@ function GM:DrawStuff()
 	if round == 1 then
 		if self.PlayTimeLeft and self.PlayTimeLeft <= 60 then
 			if self.PlayerCoords then
-				cam.Start3D()
-				render.SetMaterial( Laser )
-				render.SetColorMaterial()
-				for k, v in pairs(self.PlayerCoords) do
-					render.DrawSphere( v, 8, 10, 10, Color( 0, 200, 25, 150 ) )
+			    if self:GetAmMurderer() then
+				    cam.Start3D()
+				    render.SetMaterial( Laser )
+				    render.SetColorMaterial()
+			        for k, v in pairs(self.PlayerCoords) do
+					    render.DrawSphere( v, 8, 10, 10, Color( 0, 200, 25, 150 ) )
+				    end
+				    cam.End3D()
 				end
-				cam.End3D()
 			end
 		end
 	end

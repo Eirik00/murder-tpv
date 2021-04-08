@@ -28,11 +28,11 @@ pt.murdererDisconnectKnown = "The murderer rage quit, it was {murderer1}"
 
 pt.winBystanders = "Bystanders win!"
 pt.winBystandersMurdererWas = " The murderer was {murderer1}"
-pt.winBystandersMurdererWas2 = " The murderer was {murderer1} and {murderer2}"
+pt.winBystandersMurderersWas2 = " The murderer was {murderer1} and {murderer2}"
 pt.winMurderers = "The murderers wins!"
 pt.winMurderer = "The murderer wins!"
 pt.winMurdererMurdererWas = " He was {murderer1}"
-pt.winMurdererMurderersWas = " They were {murderer1} and {murderer2}"
+pt.winMurderersMurdererWas = " They were {murderer1} and {murderer2}"
 
 pt.minimumPlayers = "Not enough players to start round"
 pt.waitingToStart = "Waiting to start round"
@@ -66,6 +66,7 @@ pt.endroundMurdererQuit = "Bystanders win! The murderer rage quit"
 pt.endroundBystandersWin = "Bystanders win!"
 pt.endroundMurdererWins = "The murderer wins!"
 pt.endroundMurdererWas = "The murderer was {murderer1}"
+pt.endroundMurderersWas = "The murderer was {murderer1} and {murderer2}"
 
 pt.endroundLootCollected = "Loot Collected"
 
