@@ -10,8 +10,6 @@ surface.CreateFont( "ScoreboardPlayer" , {
 
 local muted = Material("icon32/muted.png")
 local admin = Material("icon32/wand.png")
---onlineAdmins = ""
---onlineModerators = ""
 
 function timeToStr( time )
     local tmp = time
@@ -35,30 +33,10 @@ local function addPlayerItem(self, mlist, ply, pteam)
 	function but:Paint(w, h)
 		local showAdmins = GAMEMODE.RoundSettings.ShowAdminsOnScoreboard
         
-        --Admin
-		if IsValid(ply) && showAdmins && ply:IsUserGroup("admin") then
+        if IsValid(ply) && showAdmins && ply:IsAdmin() then
 			surface.SetDrawColor(Color(150,50,50))
-			nickname = "[Admin] " .. ply:Nick()
-		--Owner
-		elseif IsValid(ply) && showAdmins && ply:IsUserGroup("superadmin") then
-		    surface.SetDrawColor(Color(255, 158, 0))
-		    nickname = "[Owner] " .. ply:Nick()
-		--Mod
-		elseif IsValid(ply) && showAdmins && ply:IsUserGroup("moderator") then
-		    surface.SetDrawColor(Color(0, 153, 0))
-		    nickname = "[Mod] " .. ply:Nick()
-        elseif IsValid(ply) && showAdmins && ply:IsUserGroup("headstaff") then
-		    surface.SetDrawColor(Color(20, 20, 20))
-		    nickname = "[Head of Staff] " .. ply:Nick()
-		elseif IsValid(ply) && ply:IsUserGroup("donator") then
-		    surface.SetDrawColor(Color(133, 216, 255))
-		    nickname = "[Donator] " .. ply:Nick()
-		--Member
-		elseif IsValid(ply) then
-		    surface.SetDrawColor(team.GetColor(pteam))
-		    nickname = ply:Nick()
 		else
-			surface.SetDrawColor(Color(160, 160, 160))
+			surface.SetDrawColor(team.GetColor(pteam))
 		end
 		surface.DrawRect(0, 0, w, h)
 
@@ -87,20 +65,6 @@ local function addPlayerItem(self, mlist, ply, pteam)
 			else
 			    draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
 			    draw.DrawText(string.Left(nickname, 27), "ScoreboardPlayer", e + 46, 8, color_white, 0)
-            end
-            
-            if ply:IsUserGroup("admin") || ply:IsUserGroup("superadmin") then
-                draw.DrawText(string.Left(nickname, 7), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-                draw.DrawText(string.Left(nickname, 7), "ScoreboardPlayer", e + 46, 8, Color(26, 169, 255), 0)
-            elseif ply:IsUserGroup("headstaff") then
-                draw.DrawText(string.Left(nickname, 15), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-                draw.DrawText(string.Left(nickname, 15), "ScoreboardPlayer", e + 46, 8, Color(26, 169, 255), 0)
-            elseif ply:IsUserGroup("moderator") then
-                draw.DrawText(string.Left(nickname, 5), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-                draw.DrawText(string.Left(nickname, 5), "ScoreboardPlayer", e + 46, 8, Color(26, 169, 255), 0)
-            elseif ply:IsUserGroup("donator") then
-                draw.DrawText(string.Left(nickname, 9), "ScoreboardPlayer", e + 47, 9, color_black, 0)
-                draw.DrawText(string.Left(nickname, 9), "ScoreboardPlayer", e + 46, 8, Color(26, 169, 255), 0)
             end
             
             draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 800, 9, color_black, 2)
