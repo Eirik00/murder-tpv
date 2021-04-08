@@ -1,0 +1,8 @@
+"thepitmurder"
+{
+	"base"		"base"
+	"title"		"The Pit Murder"
+	"maps"		"^md_|^mu_|^murder_"
+	"menusystem"	"1"
+	"version"	"1"
+}
