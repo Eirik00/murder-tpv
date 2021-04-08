@@ -9,7 +9,7 @@ and thanks to [MechanicalMind](https://github.com/MechanicalMind) who made the b
 
 ***
 
-If there are any bugs or errors that occur, please file an issue report!
+If there are any bugs or errors that occur, please file an issue report(Dont contact MechanicalMinds on the original murder github as he has nothing to do with this)!
 You can contact me at [Steam](https://steamcommunity.com/id/Wind02/) or on my [Discord Server](https://discord.gg/QTTwSg9): Wind#7917
 
 ***
