@@ -1,7 +1,8 @@
 local PlayerMeta = FindMetaTable("Player")
 
 util.AddNetworkString("your_are_a_murderer")
-util.AddNetworkString("other_murder")
+util.AddNetworkString("RussianCommrade")
+util.AddNetworkString("murderCount")
 
 
 GM.MurdererWeight = CreateConVar("mu_murder_weight_multiplier", 2, bit.bor(FCVAR_NOTIFY), "Multiplier for the weight of the murderer chance" )
@@ -13,6 +14,7 @@ function PlayerMeta:SetMurderer(bool)
 	net.Start( "your_are_a_murderer" )
 	net.WriteUInt(bool and 1 or 0, 8)
 	net.Send( self )
+	
 	
 	--[[net.Start( "other_murder" )
 	for k, v in pairs(player.GetAll()) do
@@ -28,6 +30,19 @@ function PlayerMeta:SetMurderer(bool)
 		net.WriteBool(false)
 	end
 	net.send( self )]]
+end
+	
+function PlayerMeta:RecieveOtherMurderer(ply)
+	net.Start("RussianCommrade")
+	net.WriteEntity(ply)
+	net.Send( self )
+
+end
+
+function GM:SendMurderCount(int)
+	net.Start("murderCount")
+	net.WriteInt(int,2)
+	net.Broadcast()
 end
 
 function PlayerMeta:GetMurderer(bool)

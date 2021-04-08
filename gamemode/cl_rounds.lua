@@ -41,6 +41,14 @@ net.Receive("SetRound", function (length)
 	end
 end)
 
+net.Receive("time_remaining_round", function (length)
+	GAMEMODE.PlayTimeLeft = net.ReadInt(10)
+end)
+
+net.Receive("plyaer_coords", function (length)
+	GAMEMODE.PlayerCoords = net.ReadTable()
+end)
+
 net.Receive("DeclareWinner" , function (length)
 	local data = {}
 	data.reason = net.ReadUInt(8)

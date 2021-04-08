@@ -1,4 +1,3 @@
-
 surface.CreateFont( "MersText1" , {
 	font = "Tahoma",
 	size = 16,
@@ -123,11 +122,17 @@ function GM:DrawStartRoundInformation()
 	local t2 = nil
 	local c = Color(20,120,255)
 	local desc = translate.table.startHelpBystander
-
-	--[[if self:GetTwoMurders() then
-		desc = translate.table.startHelpBystander2
-	end]]
 	
+	if self:GetMurdererCount() then
+		local murdererCount = self:GetMurdererCount()
+		if murdererCount == 2 then
+			desc = translate.table.startHelpBystander2
+		end
+	end
+
+	--if self:GetTwoMurders() then
+	--	desc = translate.table.startHelpBystander2
+	--end
 	if self:GetAmMurderer() then
 		--[[if self:GetTwoMurders() then
 			v = self:GetOtherMurderer()
@@ -136,12 +141,22 @@ function GM:DrawStartRoundInformation()
 			c = Color(190, 20, 20)
 		else]]
 		t1 = translate.startHelpMurdererTitle
-		desc = translate.table.startHelpMurderer
 		c = Color(190, 20, 20)
+		if self:GetSecondMurderer() != "" then
+			local h = draw.GetFontHeight("MersRadial")
+			local ply = self:GetSecondMurderer()
+			local nick = ply:Name()
+			local name = ply:GetBystanderName() or "error"
+			t2col = ply:GetPlayerColor()
+			drawTextShadow("with", "MersRadialSmall", ScrW() / 2, ScrH() * 0.25 + h * 0.7, c , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+			drawTextShadow(name .. ", " .. nick, "MersRadialSmall", ScrW() / 2, ScrH() * 0.25 + h * 1.4, c , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		end
+		desc = translate.table.startHelpMurderer
+		
 		--end
 	end
 
-	local hasMagnum = false
+	hasMagnum = false
 	for k, wep in pairs(client:GetWeapons()) do
 		if wep:GetClass() == "weapon_mu_magnum" then
 			hasMagnum = true
@@ -149,9 +164,17 @@ function GM:DrawStartRoundInformation()
 		end
 	end
 	if hasMagnum then
-		t1 = translate.startHelpGunTitle
+		local h = draw.GetFontHeight("MersRadial")
+		if self:GetMurdererCount() then
+			local murdererCount = self:GetMurdererCount()
+			if murdererCount == 1 then
+				desc = translate.table.startHelpGun
+			else
+				desc = translate.table.startHelpGunn
+			end
+		end
 		t2 = translate.startHelpGunSubtitle
-		desc = translate.table.startHelpGun
+		t1 = translate.startHelpGunTitle
 		--[[if self:GetTwoMurders() then
 			desc = translate.table.startHelpGun2
 		end]]
@@ -160,7 +183,7 @@ function GM:DrawStartRoundInformation()
 	drawTextShadow(t1, "MersRadial", ScrW() / 2, ScrH()  * 0.25, c, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	if t2 then
 		local h = draw.GetFontHeight("MersRadial")
-		drawTextShadow(t2, "MersRadialSmall", ScrW() / 2, ScrH() * 0.25 + h * 0.7, Color(120, 70, 245), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
+		drawTextShadow(t2, "MersRadialSmall", ScrW() / 2, ScrH() * 0.25 + h * 0.7, Color(120, 70, 245) , TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER)
 	end
 
 	if desc then
@@ -284,6 +307,32 @@ function GM:DrawGameHUD(ply)
 			end
 		end
 	end
+	
+	local shouldDraw = hook.Run("HUDShouldDraw" , "Timer")
+	if shouldDraw != false then
+		local round = self:GetRound()
+		local size = ScrW() * 0.08
+
+		if round == 1 then
+			if self.PlayTimeLeft then
+				local minu = math.floor(self.PlayTimeLeft / 60)
+				local sec = (self.PlayTimeLeft % 60)
+				if minu < 10 then
+				    minu = "0" .. tostring(minu)
+				end
+				if sec < 10 then
+				    sec = "0" .. tostring(sec) 
+				end
+			
+				drawTextShadow(minu .. " : " .. sec , "MersRadialSmall", size * 0.6, ScrH() - size * 0.08, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
+			else
+				drawTextShadow("Waiting for the round to end", "MersRadialSmall",  size * 0.6, ScrH() - size * 0.08, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+			end
+		elseif round == 2 then
+			drawTextShadow("Round Finished" , "MersRadialSmall", size * 0.6, ScrH() - size * 0.08, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER  )
+		end
+	end 
+	
 	
 	local shouldDraw = hook.Run("HUDShouldDraw", "MurderHealthBall")
 	if shouldDraw != false then

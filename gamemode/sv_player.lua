@@ -1,4 +1,5 @@
 util.AddNetworkString("mu_death")
+util.AddNetworkString("Teammenu")
 
 local PlayerMeta = FindMetaTable("Player")
 local EntityMeta = FindMetaTable("Entity")
@@ -14,7 +15,7 @@ function GM:PlayerInitialSpawn( ply )
 	end)
 	
 	ply.HasMoved = true
-	ply:SetTeam(2)
+	ply:SetTeam(1)
 
 	self:NetworkRound(ply)
 
@@ -22,6 +23,8 @@ function GM:PlayerInitialSpawn( ply )
 
 	local vec = Vector(0.5, 0.5, 0.5)
 	ply:SetPlayerColor(vec)
+	net.Start("Teammenu")
+	net.Send( ply )
 end
 
 function GM:PlayerSpawn( ply )
@@ -231,6 +234,7 @@ function GM:PlayerDeath(ply, Inflictor, attacker )
 			if attacker:GetMurderer() then
 				if self.RemoveDisguiseOnKill:GetBool() then
 					attacker:UnMurdererDisguise()
+					attacker:AddFrags(1)
 				end
 			elseif attacker != ply then
 				if self.ShowBystanderTKs:GetBool() then
@@ -254,6 +258,7 @@ function GM:PlayerDeath(ply, Inflictor, attacker )
 			local ct = ChatText()
 			ct:AddParts(msgs)
 			ct:SendAll()
+			ply:AddFrags(10)
 		else
 			local ct = ChatText()
 			ct:Add(translate.murdererDeathUnknown)
@@ -373,7 +378,7 @@ function GM:PlayerOnChangeTeam(ply, newTeam, oldTeam)
 	end
 	ply:SetMurderer(false)
 	if newteam == 1 then
-		
+		ply:KillSilent()
 	end
 	ply.HasMoved = true
 	ply:KillSilent()

@@ -11,6 +11,19 @@ surface.CreateFont( "ScoreboardPlayer" , {
 local muted = Material("icon32/muted.png")
 local admin = Material("icon32/wand.png")
 
+function timeToStr( time )
+    local tmp = time
+	tmp = math.floor( tmp / 60 )
+	local m = tmp % 60
+	tmp = math.floor( tmp / 60 )
+	local h = tmp % 24
+	tmp = math.floor( tmp / 24 )
+	local d = tmp % 7
+	local w = math.floor( tmp / 7 )
+
+	return string.format( "%02iw %id %02ih %02im", w, d, h, m)
+end
+
 local function addPlayerItem(self, mlist, ply, pteam)
 	local but = vgui.Create("DButton")
 	but.player = ply
@@ -19,8 +32,8 @@ local function addPlayerItem(self, mlist, ply, pteam)
 	but:SetText("")
 	function but:Paint(w, h)
 		local showAdmins = GAMEMODE.RoundSettings.ShowAdminsOnScoreboard
-
-		if IsValid(ply) && showAdmins && ply:IsAdmin() then
+        
+        if IsValid(ply) && showAdmins && ply:IsAdmin() then
 			surface.SetDrawColor(Color(150,50,50))
 		else
 			surface.SetDrawColor(team.GetColor(pteam))
@@ -34,27 +47,37 @@ local function addPlayerItem(self, mlist, ply, pteam)
 		surface.DrawOutlinedRect(0, 0, w, h)
 
 		if IsValid(ply) && ply:IsPlayer() then
+			local e = 0
 			local s = 0
-
-			if showAdmins && ply:IsAdmin() then
-				surface.SetMaterial(admin)
-				surface.SetDrawColor(color_white)
-				surface.DrawTexturedRect(s + 4, h / 2 - 16, 32, 32)
-				s = s + 32
-			end
-
+            
+            
+            
+            surface.SetDrawColor(255,255,255,255)
+            surface.DrawRect(3, 3, 34, 34)
+            
 			if ply:IsMuted() then
 				surface.SetMaterial(muted)
 				surface.SetDrawColor(color_white)
-				surface.DrawTexturedRect(s + 4, h / 2 - 16, 32, 32)
-				s = s + 32
-			end
-
+				surface.DrawTexturedRect(s + 40, h / 2 - 16, 32, 32)
+				e = e + 32
+				draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 46, 8, Color( 169, 169, 169, 255 ), 0)
+			else
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 47, 9, color_black, 0)
+			    draw.DrawText(string.Left(ply:Nick(), 27), "ScoreboardPlayer", e + 46, 8, color_white, 0)
+            end
+            
+            -- U Time
+            --draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 800, 9, color_black, 2)
+            --draw.DrawText(timeToStr( ply:GetUTimeTotalTime() ), "ScoreboardPlayer", s + 799, 8, color_white, 2)
+            --draw.DrawText("|", "ScoreboardPlayer", w - 110, 9, color_black, 2)
+            --draw.DrawText("|", "ScoreboardPlayer", w - 109, 8, color_white, 2)
+            
+            draw.DrawText("ping:", "ScoreboardPlayer", w - 49, 9, color_black, 2)
+            draw.DrawText("ping:", "ScoreboardPlayer", w - 48, 8, color_white, 2)
+            
 			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 9, 9, color_black, 2)
 			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 10, 8, color_white, 2)
-
-			draw.DrawText(ply:Nick(), "ScoreboardPlayer", s + 11, 9, color_black, 0)
-			draw.DrawText(ply:Nick(), "ScoreboardPlayer", s + 10, 8, color_white, 0)
 
 			
 		end
@@ -64,6 +87,10 @@ local function addPlayerItem(self, mlist, ply, pteam)
 	end
 
 	mlist:AddItem(but)
+	Avatar = vgui.Create( "AvatarImage", but )
+    Avatar:SetPos(4, 4)
+    Avatar:SetSize(32, 32)
+    Avatar:SetPlayer( ply, 32 )
 end
 
 function GM:DoScoreboardActionPopup(ply)
@@ -92,6 +119,15 @@ function GM:DoScoreboardActionPopup(ply)
 			function viewProfile:DoClick()
 				if IsValid(ply) then
 					ply:ShowProfile()
+				end
+		    end
+		    local getSteamid = actions:AddOption("Copy SteamID")
+			getSteamid:SetIcon("icon16/user_go.png")
+			function getSteamid:DoClick()
+			    v = LocalPlayer()
+				if IsValid(ply) then
+					SetClipboardText( ply:SteamID() )
+					chat.AddText( Color( 255, 255, 255 ), "You copied ", ply,"'s SteamID!" )
 				end
 			end
 		end
@@ -250,14 +286,14 @@ local function makeTeamList(parent, pteam)
 
 	return pnl
 end
-
+--lrjfei = 0
 
 function GM:ScoreboardShow()
 	if IsValid(menu) then
-		menu:SetVisible(true)
+	    menu:SetVisible(true)
 	else
 		menu = vgui.Create("DFrame")
-		menu:SetSize(ScrW() * 0.8, ScrH() * 0.8)
+		menu:SetSize(ScrW() * 0.98, ScrH() * 0.9)
 		menu:Center()
 		menu:MakePopup()
 		menu:SetKeyboardInputEnabled(false)
@@ -289,23 +325,67 @@ function GM:ScoreboardShow()
 			local w,h = surface.GetTextSize(self:GetText())
 			self:SetSize(w,h)
 		end
-
-		local lab = Label("by Mechanical Mind version " .. tostring(GAMEMODE.Version or "error"), menu.Credits)
-		lab:Dock(RIGHT)
-		lab:SetFont("MersText1")
-		lab.PerformLayout = name.PerformLayout
-		lab:SetTextColor(team.GetColor(1))
-
-		function menu.Credits:PerformLayout()
+        
+        function menu.Credits:PerformLayout()
 			surface.SetFont(name:GetFont())
 			local w,h = surface.GetTextSize(name:GetText())
 			self:SetTall(h)
 		end
-
+        
 		menu.Cops = makeTeamList(menu, 2)
 		menu.Cops:Dock(LEFT)
 		menu.Robbers = makeTeamList(menu, 1)
 		menu.Robbers:Dock(FILL)
+		local mods = "MechanicalMind "
+		local admins = "Coco "
+        local owners =  "Wind "
+		local one = "Created by: "
+		local breaker = "& "
+		local fuck = " "
+		--local numbing = "Players(" .. tostring(lrjfei) .. ")"
+		
+		local owne = Label(owners, menu.Credits)
+		owne:Dock(RIGHT)
+		owne:SetFont("MersText1")
+		owne.PerformLayout = name.PerformLayout
+		owne:SetTextColor(Color(255, 158, 0))
+	
+		local breake = Label(breaker, menu.Credits)
+		breake:Dock(RIGHT)
+		breake:SetFont("MersText1")
+		breake.PerformLayout = name.PerformLayout
+		breake:SetTextColor(team.GetColor(1))
+		
+		local admi = Label(admins, menu.Credits)
+		admi:Dock(RIGHT)
+		admi:SetFont("MersText1")
+		admi.PerformLayout = name.PerformLayout
+		admi:SetTextColor(Color(150,50,50))
+		
+		local breake = Label(breaker, menu.Credits)
+		breake:Dock(RIGHT)
+		breake:SetFont("MersText1")
+		breake.PerformLayout = name.PerformLayout
+		breake:SetTextColor(team.GetColor(1))
+		    
+		--moderators
+		local mode = Label(mods, menu.Credits)
+		mode:Dock(RIGHT)
+		mode:SetFont("MersText1")
+		mode.PerformLayout = name.PerformLayout
+		mode:SetTextColor(Color(0, 153, 0))
+		--Misc.
+		local online = Label(one, menu.Credits)
+		online:Dock(RIGHT)
+		online:SetFont("MersText1")
+		online.PerformLayout = name.PerformLayout
+		online:SetTextColor(Color(39, 192, 227))
+		
+		local shit = Label(fuck, menu.Credits)
+		shit:Dock(RIGHT)
+		shit.PerformLayout = name.PerformLayout
+		
+
 	end
 end
 function GM:ScoreboardHide()

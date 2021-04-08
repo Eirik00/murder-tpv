@@ -13,9 +13,9 @@ pt.teamPlayers = "Players"
 pt.teamAss = "Cake"
 
 pt.killedTeamKill = "{player} killed an innocent bystander"
-pt.killedMurderer = "{player} killed a murderer"
+pt.killedMurderer = "{player} killed the murderer"
 
-pt.murdererDeathUnknown = "The murderer died in mysterious circumstances"
+pt.murdererDeathUnknown = "A murderer died in mysterious circumstances"
 
 pt.changeTeam = "{player} changed team to {team}"
 pt.teamMoved = "{player} was moved to {team}"
@@ -23,15 +23,15 @@ pt.teamMovedAFK = "{player} was moved to {team} for being AFK"
 
 pt.spectateFailed = "You can't spectate. You ain't dead."
 
-pt.murdererDisconnect = "A murderer rage quit"
-pt.murdererDisconnectKnown = "The murderers rage quit, they were {murderer1} and {murderer2}"
+pt.murdererDisconnect = "The murderer rage quit"
+pt.murdererDisconnectKnown = "The murderer rage quit, it was {murderer1}"
 
 pt.winBystanders = "Bystanders win!"
 pt.winBystandersMurdererWas = " The murderer was {murderer1}"
-pt.winBystandersMurderersWas = " The murderers were {murderer1} and {murderer2}"
+pt.winBystandersMurderersWas2 = " The murderer was {murderer1} and {murderer2}"
+pt.winMurderers = "The murderers wins!"
 pt.winMurderer = "The murderer wins!"
-pt.winMurdererMurdererWas = " The murderer was {murderer1}"
-pt.winMurderers = "The murderers win!"
+pt.winMurdererMurdererWas = " He was {murderer1}"
 pt.winMurderersMurdererWas = " They were {murderer1} and {murderer2}"
 
 pt.minimumPlayers = "Not enough players to start round"
@@ -66,8 +66,7 @@ pt.endroundMurdererQuit = "Bystanders win! The murderer rage quit"
 pt.endroundBystandersWin = "Bystanders win!"
 pt.endroundMurdererWins = "The murderer wins!"
 pt.endroundMurdererWas = "The murderer was {murderer1}"
-pt.endroundMurderersWins = "The murderers win!"
-pt.endroundMurderersWas = "The murderers were {murderer1} and {murderer2}"
+pt.endroundMurderersWas = "The murderer was {murderer1} and {murderer2}"
 
 pt.endroundLootCollected = "Loot Collected"
 
@@ -93,10 +92,12 @@ pt.startHelpBystander = {
 	"There is a murderer on the loose",
 	"Don't get killed"
 }
---[[pt.startHelpBystander2 = {
+
+pt.startHelpBystander2 = {
 	"There are two murderers on the loose",
 	"Don't get killed"
-}]]
+}
+
 
 pt.startHelpGunTitle = "You are a bystander"
 pt.startHelpGunSubtitle = "with a secret weapon"
@@ -104,16 +105,18 @@ pt.startHelpGun = {
 	"There is a murderer on the loose",
 	"Find and kill him"
 }
---[[pt.startHelpGun2 = {
+
+pt.startHelpGunn = {
 	"There are two murderers on the loose",
-	"Find and kill them"
-}]]
+	"Find and kill him"
+}
 
 pt.startHelpMurdererTitle = "You are the murderer"
 pt.startHelpMurderer = {
 	"Kill everyone",
 	"Don't get caught"
 }
+
 
 pt.murdererFog = "Your evil presence is showing"
 pt.murdererFogSub = "Kill someone to hide"
