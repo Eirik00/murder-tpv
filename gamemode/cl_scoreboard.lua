@@ -8,6 +8,14 @@ surface.CreateFont( "ScoreboardPlayer" , {
 	italic = false
 })
 
+surface.CreateFont( "ScoreboardPlayer_smoll" , {
+	font = "coolvetica",
+	size = 20,
+	weight = 400,
+	antialias = true,
+	italic = false
+})
+
 local muted = Material("icon32/muted.png")
 local admin = Material("icon32/wand.png")
 
@@ -73,11 +81,17 @@ local function addPlayerItem(self, mlist, ply, pteam)
             --draw.DrawText("|", "ScoreboardPlayer", w - 110, 9, color_black, 2)
             --draw.DrawText("|", "ScoreboardPlayer", w - 109, 8, color_white, 2)
             
-            draw.DrawText("ping:", "ScoreboardPlayer", w - 49, 9, color_black, 2)
-            draw.DrawText("ping:", "ScoreboardPlayer", w - 48, 8, color_white, 2)
+            draw.DrawText("ping:", "ScoreboardPlayer_smoll", w - 39, 2, color_black, 2)
+            draw.DrawText("ping:", "ScoreboardPlayer_smoll", w - 38, 1, color_white, 2)
             
-			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 9, 9, color_black, 2)
-			draw.DrawText(ply:Ping(), "ScoreboardPlayer", w - 10, 8, color_white, 2)
+			draw.DrawText(ply:Ping(), "ScoreboardPlayer_smoll", w - 9, 2, color_black, 2)
+			draw.DrawText(ply:Ping(), "ScoreboardPlayer_smoll", w - 10, 1, color_white, 2)
+            
+            draw.DrawText("points:", "ScoreboardPlayer_smoll", w - 39, 21, color_black, 2)
+            draw.DrawText("points:", "ScoreboardPlayer_smoll", w - 38, 20, color_white, 2)
+            
+			draw.DrawText(ply:Frags(), "ScoreboardPlayer_smoll", w - 9, 21, color_black, 2)
+			draw.DrawText(ply:Frags(), "ScoreboardPlayer_smoll", w - 10, 20, color_white, 2)
 
 			
 		end
