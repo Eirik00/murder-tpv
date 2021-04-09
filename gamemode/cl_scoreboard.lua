@@ -177,8 +177,11 @@ function GM:DoScoreboardActionPopup(ply)
 end
 
 local function doPlayerItems(self, mlist, pteam)
-
-	for k, ply in pairs(team.GetPlayers(pteam)) do
+	local playerTable = {}
+    for i, v in ipairs(team.GetPlayers(pteam)) do
+    	playerTable[v] = v:Frags()
+	end
+	for k, ply in pairs(table.SortByKey(playerTable)) do
 		local found = false
 
 		for t,v in pairs(mlist:GetCanvas():GetChildren()) do
@@ -220,30 +223,25 @@ local function makeTeamList(parent, pteam)
 		if !self.RefreshWait || self.RefreshWait < CurTime() then
 			self.RefreshWait = CurTime() + 0.1
 			doPlayerItems(self, mlist, pteam)
-
-			// update chaos/control
-			if pteam == 2 then
-				-- chaos:SetText("Control: " .. GAMEMODE:GetControl())
-			else
-				-- chaos:SetText("Chaos: " .. GAMEMODE:GetChaos())
-			end
 		end
 	end
 
 	local headp = vgui.Create("DPanel", pnl)
 	headp:DockMargin(0,0,0,4)
-	-- headp:DockPadding(4,0,4,0)
 	headp:Dock(TOP)
+    
 	function headp:Paint() end
-
+    
 	local but = vgui.Create("DButton", headp)
 	but:Dock(RIGHT)
 	but:SetText(translate.scoreboardJoinTeam)
 	but:SetTextColor(color_white)
 	but:SetFont("Trebuchet18")
+    
 	function but:DoClick()
 		RunConsoleCommand("mu_jointeam", pteam)
 	end
+    
 	function but:Paint(w, h)
 		surface.SetDrawColor(team.GetColor(pteam))
 		surface.DrawRect(0, 0, w, h)
@@ -263,24 +261,6 @@ local function makeTeamList(parent, pteam)
 		end
 	end
 
-	-- chaos = vgui.Create("DLabel", headp)
-	-- chaos:Dock(RIGHT)
-	-- chaos:DockMargin(0,0,10,0)
-	-- if pteam == 2 then
-	-- 	-- chaos:SetText("Control: " .. GAMEMODE:GetControl())
-	-- else
-	-- 	-- chaos:SetText("Chaos: " .. GAMEMODE:GetChaos())
-	-- end
-	-- function chaos:PerformLayout()
-	-- 	self:ApplySchemeSettings()
-	-- 	self:SizeToContentsX()
-	-- 	if ( self.m_bAutoStretchVertical ) then
-	-- 		self:SizeToContentsY()
-	-- 	end
-	-- end
-	-- chaos:SetFont("Trebuchet24")
-	-- chaos:SetTextColor(team.GetColor(pteam))
-
 	local head = vgui.Create("DLabel", headp)
 	head:SetText(team.GetName(pteam))
 	head:SetFont("Trebuchet24")
@@ -297,15 +277,12 @@ local function makeTeamList(parent, pteam)
 		child:Dock( TOP )
 		child:DockMargin( 0,0,0,4 )
 	end
-
+	
+    
 	return pnl
 end
---lrjfei = 0
 
 function GM:ScoreboardShow()
-	if IsValid(menu) then
-	    menu:SetVisible(true)
-	else
 		menu = vgui.Create("DFrame")
 		menu:SetSize(ScrW() * 0.98, ScrH() * 0.9)
 		menu:Center()
@@ -356,7 +333,6 @@ function GM:ScoreboardShow()
 		local one = "Created by: "
 		local breaker = "& "
 		local fuck = " "
-		--local numbing = "Players(" .. tostring(lrjfei) .. ")"
 		
 		local owne = Label(owners, menu.Credits)
 		owne:Dock(RIGHT)
@@ -398,14 +374,9 @@ function GM:ScoreboardShow()
 		local shit = Label(fuck, menu.Credits)
 		shit:Dock(RIGHT)
 		shit.PerformLayout = name.PerformLayout
-		
-
-	end
 end
 function GM:ScoreboardHide()
-	if IsValid(menu) then
-		menu:Close()
-	end
+    menu:Close()
 end
 
 function GM:HUDDrawScoreBoard()
