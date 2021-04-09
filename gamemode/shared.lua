@@ -1,17 +1,17 @@
-GM.Name 	= "Murder"
-GM.Author 	= "MechanicalMind"
+GM.Name 	= "Murder - The Pit Version"
+GM.Author 	= "MechanicalMind// Coco & Wind"
 -- credits to Minty Fresh for some styling on the scoreboard
 -- credits to Waddlesworth for the logo and menu icon
 GM.Email 	= ""
-GM.Website 	= "www.codingconcoctions.com/murder/"
-GM.Version = "29"
+GM.Website 	= "thepit.xyz"
+GM.Version = "1"
 
 function GM:SetupTeams()
 	team.SetUp(1, translate.teamSpectators, Color(150, 150, 150))
 	team.SetUp(2, translate.teamPlayers, Color(26, 120, 245))
-	team.SetUp(1001, "Cringe", Color(26, 120, 245), false)
-	team.SetUp(1002, "Stupid", Color(26, 120, 245), false)
-	team.SetUp(1003, "Moron", Color(26, 120, 245), false)
+	team.SetUp(1001, "nondefined1", Color(26, 120, 245), false)
+	team.SetUp(1002, "nondefined2", Color(26, 120, 245), false)
+	team.SetUp(1003, "nondefined3", Color(26, 120, 245), false)
 end
 GM:SetupTeams()
 
