@@ -258,7 +258,7 @@ function GM:PlayerDeath(ply, Inflictor, attacker )
 			local ct = ChatText()
 			ct:AddParts(msgs)
 			ct:SendAll()
-			ply:AddFrags(10)
+			attacler:AddFrags(10)
 		else
 			local ct = ChatText()
 			ct:Add(translate.murdererDeathUnknown)
